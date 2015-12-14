@@ -1,0 +1,70 @@
+package com.mtouche.locationservice.config;
+
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+import com.mtouche.locationservice.business.CheckingTypeManager;
+import com.mtouche.locationservice.business.ConfigurationManager;
+import com.mtouche.locationservice.business.DatabaseLocationManager;
+import com.mtouche.locationservice.business.LocationManager;
+import com.mtouche.locationservice.business.SubdomainManager;
+
+@Configuration
+@EnableWebMvc
+@ComponentScan(basePackages = "com.mtouche.locationservice")
+public class WebMvcConfig extends WebMvcConfigurerAdapter {
+
+    @Bean
+    public static PropertyPlaceholderConfigurer placeHolderConfigurer() {
+        PropertyPlaceholderConfigurer propertyPlaceholderConfigurer = new PropertyPlaceholderConfigurer();
+        Resource[] locations = new Resource[] {
+                new ClassPathResource(
+                        "configuration/application_settings.properties"),
+                new ClassPathResource(
+                        "configuration/application_messages.properties") };
+        propertyPlaceholderConfigurer.setLocations(locations);
+        // propertyPlaceholderConfigurer.setIgnoreResourceNotFound(true);
+        return propertyPlaceholderConfigurer;
+    }
+
+    @Bean
+    public ViewResolver getViewResolver() {
+        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        resolver.setPrefix("/WEB-INF/jsp/");
+        resolver.setSuffix(".jsp");
+        resolver.setOrder(1);
+        return resolver;
+    }
+
+    @Bean(name = "locationManager")
+    public LocationManager getLocationManager() {
+        LocationManager locationManager = new DatabaseLocationManager();
+        return locationManager;
+    }
+
+    @Bean(name = "subdomainManager")
+    public SubdomainManager getSubdomainManager() {
+        SubdomainManager subdomainManager = new SubdomainManager();
+        return subdomainManager;
+    }
+
+    @Bean(name = "checkingTypeManager")
+    public CheckingTypeManager getCheckingTypeManager() {
+        CheckingTypeManager checkingTypeManager = new CheckingTypeManager();
+        return checkingTypeManager;
+    }
+
+    @Bean(name = "configurationManager")
+    public ConfigurationManager getConfigurationManager(){
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        return configurationManager;
+    }
+}
